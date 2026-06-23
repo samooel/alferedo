@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Carattere&display=swap');
+@import "tailwindcss";
+
+:root {
+  --font-carattere: 'Carattere', cursive;
+}
+
+body {
+  font-family: var(--font-inter);
+}
+
+.font-carattere {
+  font-family: var(--font-carattere);
+}
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.15); }
+  50%       { transform: scaleY(1);    }
+}
