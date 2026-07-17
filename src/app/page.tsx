@@ -1,42 +1,20 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { Square } from 'lucide-react'
 import SoundCard from '@/src/components/SoundCard'
 import Loader from '@/src/components/Loader'
-import { useApp } from '@/src/context/AppContext'
-import type { Sound, Category } from '@/src/data/sounds'
+import { useHomePage } from './page.hook'
 
 export default function HomePage() {
-  const { favorites } = useApp()
-  const [sounds, setSounds]         = useState<Sound[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [activeCategory, setActiveCategory] = useState<string>('all')
-  const [loading, setLoading]       = useState(true)
-
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/sounds').then(r => r.json()),
-      fetch('/api/categories').then(r => r.json()),
-    ]).then(([s, c]) => {
-      if (Array.isArray(s)) setSounds(s)
-      if (Array.isArray(c)) setCategories(c)
-    }).finally(() => setLoading(false))
-  }, [])
-
-  const isHidden = (sound: Sound) =>
-    activeCategory !== 'all' && sound.category !== activeCategory
-
-  const orderedSounds = useMemo(() => {
-    const favoriteIds = new Set(favorites)
-
-    return [...sounds].sort((a, b) => {
-      const aFavorite = favoriteIds.has(a.id)
-      const bFavorite = favoriteIds.has(b.id)
-
-      if (aFavorite === bFavorite) return 0
-      return aFavorite ? -1 : 1
-    })
-  }, [favorites, sounds])
+  const {
+    categories,
+    activeCategory,
+    loading,
+    orderedSounds,
+    isHidden,
+    setActiveCategory,
+    stopAllSounds,
+  } = useHomePage()
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-cyan-500 via-sky-500 to-teal-500 text-white p-8 pt-24">
@@ -53,36 +31,48 @@ export default function HomePage() {
 
         {/* Category filter tabs */}
         {categories.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            <button
-              onClick={() => setActiveCategory('all')}
-              className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-colors ${
-                activeCategory === 'all'
-                  ? 'bg-white/30 border-white/50'
-                  : 'bg-white/10 border-white/20 hover:bg-white/20'
-              }`}
-            >
-              All
-            </button>
-            {categories.map(cat => (
+          <div className="mb-10 flex flex-col gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  onClick={() => setActiveCategory('all')}
+                  className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-colors ${
+                    activeCategory === 'all'
+                      ? 'bg-white/30 border-white/50'
+                      : 'bg-white/10 border-white/20 hover:bg-white/20'
+                  }`}
+                >
+                  All
+                </button>
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.slug)}
+                    className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-colors ${
+                      activeCategory === cat.slug
+                        ? 'bg-white/30 border-white/50'
+                        : 'bg-white/10 border-white/20 hover:bg-white/20'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
               <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.slug)}
-                className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-colors ${
-                  activeCategory === cat.slug
-                    ? 'bg-white/30 border-white/50'
-                    : 'bg-white/10 border-white/20 hover:bg-white/20'
-                }`}
+                onClick={stopAllSounds}
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white/80 transition-colors hover:bg-white/20"
+                aria-label="Stop all sounds"
               >
-                {cat.name}
+                <Square size={14} className="fill-white text-white" />
+                <span>Stop all</span>
               </button>
-            ))}
+            </div>
           </div>
         )}
 
         {loading && <Loader message="Loading sounds…" />}
 
-        {!loading && sounds.length === 0 && (
+        {!loading && orderedSounds.length === 0 && (
           <div className="text-center text-white/60 py-20">No sounds found.</div>
         )}
 
