@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import SoundCard from '@/src/components/SoundCard'
 import Loader from '@/src/components/Loader'
+import { useApp } from '@/src/context/AppContext'
 import type { Sound, Category } from '@/src/data/sounds'
 
 export default function HomePage() {
+  const { favorites } = useApp()
   const [sounds, setSounds]         = useState<Sound[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('all')
@@ -23,6 +25,18 @@ export default function HomePage() {
 
   const isHidden = (sound: Sound) =>
     activeCategory !== 'all' && sound.category !== activeCategory
+
+  const orderedSounds = useMemo(() => {
+    const favoriteIds = new Set(favorites)
+
+    return [...sounds].sort((a, b) => {
+      const aFavorite = favoriteIds.has(a.id)
+      const bFavorite = favoriteIds.has(b.id)
+
+      if (aFavorite === bFavorite) return 0
+      return aFavorite ? -1 : 1
+    })
+  }, [favorites, sounds])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-cyan-500 via-sky-500 to-teal-500 text-white p-8 pt-24">
@@ -74,7 +88,7 @@ export default function HomePage() {
 
         {/* All cards stay mounted so audio keeps playing when the filter changes */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sounds.map(sound => (
+          {orderedSounds.map(sound => (
             <div key={sound.id} className={isHidden(sound) ? 'hidden' : ''}>
               <SoundCard sound={sound} />
             </div>
