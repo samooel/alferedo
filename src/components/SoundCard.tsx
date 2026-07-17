@@ -1,11 +1,24 @@
 'use client'
 
-import { Heart } from 'lucide-react'
+import type { CSSProperties } from 'react'
+import { Heart, Volume2 } from 'lucide-react'
 import type { SoundCardProps } from './SoundCard.types'
 import { useSoundCard } from './SoundCard.hook'
 
 export default function SoundCard({ sound }: SoundCardProps) {
-  const { audioRef, isPlaying, isFavorite, Icon, toggle, handleFavorite, onPlay, onPause } = useSoundCard({ sound })
+  const {
+    audioRef,
+    isPlaying,
+    isFavorite,
+    soundVolume,
+    Icon,
+    toggle,
+    handleFavorite,
+    handleVolumeChange,
+    stopCardToggle,
+    onPlay,
+    onPause,
+  } = useSoundCard({ sound })
 
   return (
     <div
@@ -31,6 +44,29 @@ export default function SoundCard({ sound }: SoundCardProps) {
       <h2 className="text-2xl font-semibold mb-2">{sound.title}</h2>
 
       <p className="text-white/70">{isPlaying ? 'Playing...' : 'Tap to play'}</p>
+
+      <div
+        className="mt-6 w-full"
+        onClick={stopCardToggle}
+        onPointerDown={stopCardToggle}
+      >
+        <label htmlFor={`sound-volume-${sound.id}`} className="mb-2 flex items-center justify-center gap-2 text-sm text-white/45">
+          <Volume2 size={15} className="text-white/40" />
+          <span>{soundVolume}%</span>
+        </label>
+        <input
+          id={`sound-volume-${sound.id}`}
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value={soundVolume}
+          onChange={handleVolumeChange}
+          aria-label={`${sound.title} volume`}
+          className="sound-volume-slider"
+          style={{ '--sound-volume': `${soundVolume}%` } as CSSProperties}
+        />
+      </div>
 
       <audio ref={audioRef} src={sound.file} loop onPlay={onPlay} onPause={onPause} />
     </div>

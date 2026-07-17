@@ -4,12 +4,15 @@ export type SoundIconName =
   | 'waves'
   | 'wind'
   | 'flame'
+  | 'fire'
   | 'cloud'
   | 'moon'
   | 'leaf'
   | 'music'
   | 'thunder'
   | 'storm'
+  | 'cafe'
+  | 'train'
 
 export type Sound = {
   id: number
