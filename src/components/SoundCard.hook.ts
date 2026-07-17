@@ -32,9 +32,10 @@ export function useSoundCard({ sound }: SoundCardProps) {
     toggleFavorite(sound.id)
   }
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement> | React.TouchEvent<HTMLInputElement> | React.PointerEvent<HTMLInputElement>) => {
     e.stopPropagation()
-    setSoundVolume(sound.id, Number(e.target.value))
+    const target = e.target as HTMLInputElement
+    setSoundVolume(sound.id, Number(target.value))
   }
 
   const stopCardToggle = (e: React.SyntheticEvent) => {

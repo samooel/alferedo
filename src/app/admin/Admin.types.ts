@@ -20,3 +20,9 @@ export interface AdminState {
   error: string | null
   success: string | null
 }
+
+export interface EditSoundFormState {
+  title: string
+  iconName: string
+  category: string
+}

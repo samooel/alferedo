@@ -21,10 +21,12 @@ body {
 .sound-volume-slider {
   --sound-volume: 80%;
   appearance: none;
+  -webkit-appearance: none;
   width: 100%;
   height: 18px;
   cursor: pointer;
   background: transparent;
+  touch-action: manipulation;
 }
 
 .sound-volume-slider:focus {
@@ -43,6 +45,7 @@ body {
 }
 
 .sound-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
   appearance: none;
   width: 14px;
   height: 14px;
