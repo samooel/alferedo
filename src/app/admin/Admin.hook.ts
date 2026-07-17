@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useApp } from '@/src/context/AppContext'
-import type { Sound, Category, UploadFormState } from './Admin.types'
+import type { Sound, Category, UploadFormState, EditSoundFormState } from './Admin.types'
 
 const EMPTY_FORM: UploadFormState = {
   title: '',
@@ -21,6 +21,8 @@ export function useAdmin() {
   const [loading, setLoading]             = useState(true)
   const [uploading, setUploading]         = useState(false)
   const [creatingCategory, setCreatingCategory] = useState(false)
+  const [editingSoundId, setEditingSoundId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<EditSoundFormState>({ title: '', iconName: 'waves', category: '' })
   const [error, setError]                 = useState<string | null>(null)
   const [success, setSuccess]             = useState<string | null>(null)
 
@@ -97,6 +99,55 @@ export function useAdmin() {
     }
   }
 
+  const openEditModal = (sound: Sound) => {
+    setEditingSoundId(sound.id)
+    setEditForm({
+      title: sound.title,
+      iconName: sound.iconName,
+      category: sound.category,
+    })
+  }
+
+  const closeEditModal = () => {
+    setEditingSoundId(null)
+    setEditForm({ title: '', iconName: 'waves', category: '' })
+  }
+
+  const updateSound = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingSoundId) return
+
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const res = await fetch(`/api/sounds/${editingSoundId}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: editForm.title.trim(),
+          iconName: editForm.iconName,
+          category: editForm.category,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? 'Failed to update sound')
+        return
+      }
+
+      setSuccess(`"${editForm.title.trim()}" updated successfully!`)
+      await fetchAll()
+      closeEditModal()
+    } catch {
+      setError('Network error')
+    }
+  }
+
   const deleteSound = async (id: number) => {
     setError(null)
     const res = await fetch(`/api/sounds/${id}`, {
@@ -133,11 +184,17 @@ export function useAdmin() {
     loading,
     uploading,
     creatingCategory,
+    editingSoundId,
+    editForm,
     error,
     success,
     setField,
+    setEditForm,
     createCategory,
     uploadSound,
+    openEditModal,
+    closeEditModal,
+    updateSound,
     deleteSound,
     deleteCategory,
   }

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Upload, FolderPlus, Music, Trash2 } from 'lucide-react'
+import { Upload, FolderPlus, Music, Trash2, Pencil } from 'lucide-react'
 import { useAdmin } from './Admin.hook'
 import { soundIconOptions } from '@/src/lib/soundIcons'
 import Loader from '@/src/components/Loader'
@@ -11,8 +11,10 @@ export default function AdminPage() {
   const router = useRouter()
   const {
     user, sounds, categories, form, loading,
-    uploading, creatingCategory, error, success,
-    setField, createCategory, uploadSound, deleteSound, deleteCategory,
+    uploading, creatingCategory, editingSoundId, editForm,
+    error, success,
+    setField, setEditForm, createCategory, uploadSound,
+    openEditModal, closeEditModal, updateSound, deleteSound, deleteCategory,
   } = useAdmin()
 
   useEffect(() => {
@@ -162,6 +164,13 @@ export default function AdminPage() {
                 <div className="flex items-center gap-3 shrink-0">
                   <audio controls src={sound.file} className="h-8 w-40 opacity-80" />
                   <button
+                    onClick={() => openEditModal(sound)}
+                    className="p-1.5 hover:text-cyan-300 transition-colors"
+                    aria-label={`Edit ${sound.title}`}
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
                     onClick={() => deleteSound(sound.id)}
                     className="p-1.5 hover:text-red-300 transition-colors"
                     aria-label={`Delete ${sound.title}`}
@@ -176,6 +185,79 @@ export default function AdminPage() {
             )}
           </div>
         </section>
+
+        {editingSoundId !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-[24px] border border-slate-200 bg-white p-6 shadow-2xl">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-slate-900">Edit Sound</h3>
+                <button
+                  onClick={closeEditModal}
+                  className="text-slate-500 transition-colors hover:text-slate-800"
+                  aria-label="Close edit modal"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={updateSound} className="space-y-4">
+                <label className="space-y-1 block">
+                  <span className="text-sm text-slate-600">Title</span>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.title}
+                    onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-sky-400"
+                  />
+                </label>
+
+                <label className="space-y-1 block">
+                  <span className="text-sm text-slate-600">Category</span>
+                  <select
+                    value={editForm.category}
+                    onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 outline-none focus:border-sky-400"
+                  >
+                    <option value="">— No category —</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="space-y-1 block">
+                  <span className="text-sm text-slate-600">Icon</span>
+                  <select
+                    value={editForm.iconName}
+                    onChange={e => setEditForm(prev => ({ ...prev, iconName: e.target.value }))}
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 outline-none focus:border-sky-400"
+                  >
+                    {soundIconOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={closeEditModal}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-xl border border-sky-200 bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-600"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
       </div>
     </main>
