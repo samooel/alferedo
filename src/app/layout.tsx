@@ -43,12 +43,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicon-48.png', sizes: '48x48', type: 'image/png' },
       { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
       { url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
-    shortcut: '/icon.png',
-    apple: '/apple-icon.png',
+    shortcut: '/favicon-48.png',
+    apple: '/apple-touch-icon.png',
   },
   appleWebApp: {
     capable: true,
