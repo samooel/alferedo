@@ -23,6 +23,15 @@ export default function NavBar() {
           <Link href="/admin" className={linkClass('/admin')}>Admin</Link>
         )}
 
+        <a
+          href="https://www.paypal.com/donate/?hosted_button_id=YOUR_PAYPAL_BUTTON_ID"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm bg-sky-600/90 hover:bg-sky-500 border border-sky-400/60 text-white px-4 py-1.5 rounded-full transition-all"
+        >
+          Donate
+        </a>
+
         {user ? (
           <button
             onClick={handleLogout}
