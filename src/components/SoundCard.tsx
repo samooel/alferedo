@@ -61,9 +61,14 @@ export default function SoundCard({ sound }: SoundCardProps) {
           max="100"
           step="1"
           value={soundVolume}
+          onInput={handleVolumeChange}
           onChange={handleVolumeChange}
-          onTouchEnd={handleVolumeChange}
-          onPointerUp={handleVolumeChange}
+          onTouchStart={e => e.stopPropagation()}
+          onTouchMove={e => e.stopPropagation()}
+          onTouchEnd={e => e.stopPropagation()}
+          onPointerDown={e => e.stopPropagation()}
+          onPointerMove={e => e.stopPropagation()}
+          onPointerUp={e => e.stopPropagation()}
           aria-label={`${sound.title} volume`}
           className="sound-volume-slider"
           style={{ '--sound-volume': `${soundVolume}%` } as CSSProperties}
