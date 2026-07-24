@@ -24,7 +24,7 @@ export default function NavBar() {
         )}
 
         <a
-          href="https://www.paypal.com/donate/?hosted_button_id=YOUR_PAYPAL_BUTTON_ID"
+          href="https://www.paypal.com/donate/?business=7G5LNVHCQ9E54&amount=2&no_recurring=0&item_name=Buy+me+a+coffee&currency_code=USD"
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm bg-sky-600/90 hover:bg-sky-500 border border-sky-400/60 text-white px-4 py-1.5 rounded-full transition-all"
